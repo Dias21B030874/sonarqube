@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sonarqube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube
+  template:
+    metadata:
+      labels:
+        app: sonarqube
+    spec:
+      containers:
+        - name: sonarqube
+          image: sonarqube:10.5.1-community
+          ports:
+            - containerPort: 9000
+          env:
+            - name: SONAR_JDBC_URL
+              value: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.auth.database }}"
+            - name: SONAR_JDBC_USERNAME
+              value: "{{ .Values.postgresql.auth.username }}"
+            - name: SONAR_JDBC_PASSWORD
+              value: "{{ .Values.postgresql.auth.password }}"
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+            requests:
+              memory: "1Gi"
+              cpu: "0.5"
+
